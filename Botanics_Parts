@@ -1,0 +1,64 @@
+// Isolating Botanical Parts from Lego Schema
+
+create or replace view botanic_parts as
+(
+    with 
+    
+    botanicals as
+    (
+    select 
+        id
+        , name
+    from themes
+    where name like 'Botanicals'
+    )
+    ,
+    botanical_id as
+    (
+    select 
+        s.name
+        , i.id
+    from sets as s
+    join botanicals as b
+        on s.theme_id = b.id
+    join inventories as i
+        on s.set_num = i.set_num
+    )
+    ,
+    bontanical_parts as
+    (
+    select 
+        b.id as set_id
+        , b.name as set_name
+        , i_p.inventory_id
+        , i_p.part_num
+        , i_p.color_id
+        , i_p.quantity
+        , i_p.is_spare
+    from botanical_id as b
+    join inventory_parts as i_p
+        on b.id = i_p.inventory_id
+    )
+    
+    select 
+        b.inventory_id
+        , b.part_num
+        , b.color_id
+        , b.quantity
+        , b.is_spare
+        , p.name as part_name
+        , p.part_cat_id
+        , p.part_material
+        , c.id as colour_id
+        , c.name as colour_name
+        , c.rgb as rgb_code
+        , c.is_trans
+        , p_c.c2 as part_category
+    from bontanical_parts as b
+    join parts as p
+        on b.part_num = p.part_num
+    join colours as c
+        on b.color_id = c.id
+    join plant_categories_2 as p_c
+        on p.part_cat_id = p_c.c1
+    )
