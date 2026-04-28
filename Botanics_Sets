@@ -1,0 +1,37 @@
+// Isolating Botanical sets from Lego Schema
+create or replace view botanic_sets as
+(
+    
+    with 
+    
+    botanicals as
+    (
+    select * 
+    from themes
+    where name like 'Botanicals'
+    )
+    ,
+    categories as
+    (
+    select *
+    from part_categories
+    where c2 like 'Animals / Creatures'
+    or c2 like 'Plants & Trees'
+    )
+    
+    
+    select  
+        s.name as set_name
+        , i.id as set_id
+        , s.year
+        , s.num_parts
+        , s.set_num
+        , s.img_url
+        , i.version
+        , i.id as inventory_id
+    from sets as s
+    join botanicals as b
+        on s.theme_id = b.id
+    join inventories as i
+        on s.set_num = i.set_num
+)
